@@ -99,16 +99,20 @@ export default function App() {
       </NavBar>
       <Main>
         <Box>
-          <MoviesList movies={movies} />
+        <MoviesList movies={movies}/>
         </Box>
-        <Box>
-          <WatchSummary watched={watched}/>
-          <WatchMoviesList watched={watched}/>
-        </Box>
+       
+       <Box>
+       <>
+        <WatchSummary watched={watched}/>
+        <WatchMoviesList watched={watched}/>
+         </>
+        </Box> 
       </Main>
     </>
   );
 }
+
 
 function Main({ children }) {
   return <main className="main">{children}</main>;
@@ -119,10 +123,7 @@ function Box({ children }) {
 
   return (
     <div className="box">
-      <button
-        className="btn-toggle"
-        onClick={() => setIsOpen((open) => !open)}
-      >
+      <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
         {isOpen ? "–" : "+"}
       </button>
       {isOpen && children}
@@ -134,7 +135,7 @@ function MoviesList({ movies }) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID}/>
+        <Movie movie={movie} key={movie.imdbID} />
       ))}
     </ul>
   );
@@ -155,24 +156,7 @@ function Movie({ movie }) {
   );
 }
 
-// function WatchBox({children}) {
-//   const [isOpen2, setIsOpen2] = useState(true);
 
-//   return (
-//     <div className="box">
-//       <button
-//         className="btn-toggle"
-//         onClick={() => setIsOpen2((open) => !open)}
-//       >
-//         {isOpen2 ? "–" : "+"}
-//       </button>
-//       {isOpen2 && 
-//            children
-      
-//       }
-//     </div>
-//   );
-// }
 
 function WatchSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
@@ -237,4 +221,3 @@ function WatchMoviesList({ watched }) {
 }
 
 
-// MoviesList and WatchMoviesList are almost similar, we can cure this repeat principal 
