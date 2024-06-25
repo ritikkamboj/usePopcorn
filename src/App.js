@@ -90,17 +90,45 @@ export default function App() {
 
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [error,setError]=useState('');
   const [isLoading,setIsLoading]= useState(false);
 
   useEffect(function()
 {
   async function fetchMovies(){
-    setIsLoading(true);
-    const res =await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=interstellar`);
+    try{
+      setIsLoading(true);
+    const res =await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=hgjkbkj`);
+    console.log(res.ok,'apna data ');
+    if(!res.ok)
+      {console.log('enter in the if condition');
+      throw new Error('data is not fetched');
+    }
     const data = await res.json();
+    console.log(data)
+    if(data.Response ==="False")
+      throw new Error("Movie not Found");
+
     setMovies(data.Search);
     setIsLoading(false);
-  }fetchMovies()
+  }catch(err)
+{
+ 
+
+  console.log(err);
+  console.error(err.message);
+ 
+ 
+ 
+  setError(err.message);
+}
+
+finally
+{
+  setIsLoading(false);
+}
+}
+fetchMovies()
 },[]);
 // setWatched([]);
   return (
@@ -112,7 +140,11 @@ export default function App() {
       </NavBar>
       <Main>
         <Box>
-        {isLoading ? <Loading/> : <MoviesList movies={movies}/>}
+          {isLoading && <Loading/>}
+        {/* {isLoading ? <Loading/> : <MoviesList movies={movies}/>} before error condition we are using this code  */}
+        {!isLoading && !error && <MoviesList movies={movies}/> }
+        {error && <ErrorInfo messege={error}/>}
+        {}
         </Box>
        
        <Box>
@@ -124,6 +156,10 @@ export default function App() {
       </Main>
     </>
   );
+  function ErrorInfo({messege})
+  {
+    return <p className="error"><span>🛑🤚</span>{messege}</p>
+  }
 }
 function Loading()
 {
