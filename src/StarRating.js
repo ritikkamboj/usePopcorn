@@ -32,7 +32,7 @@ export default function StarRating({
   className ='',
   messeges = [],
   defaultRating = 0,
-  onSetRating,
+  onSetRating = () =>{}
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(defaultRating);

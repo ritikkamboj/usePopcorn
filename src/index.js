@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
-// import './index.css';
-// import App from './App';
+import './index.css';
+import App from './App';
 import StarRating from './StarRating';
 // import reportWebVitals from './reportWebVitals';
 function Test()
@@ -16,10 +16,11 @@ function Test()
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <StarRating maxRating={5} messeges ={['Terrible','Bad','Okay','good','Excellent']}/>
+    {/* <StarRating maxRating={5} messeges ={['Terrible','Bad','Okay','good','Excellent']}/>
     <StarRating />
     <StarRating size={24} maxRating={10} className='text' defaultRating ={3}/>
-    <Test/>
+    <Test/> */}
+    <App/>
     {/* we can also pass css class like that  */}
     {/* <StarRating maxRating={10} />
     <StarRating  /> */}
