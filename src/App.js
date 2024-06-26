@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import StarRating from "./StarRating";
 
 const tempMovieData = [
   {
@@ -113,6 +114,9 @@ export default function App() {
   function handleCloseMovie() {
     setSelectedId(null);
   }
+  function handleAddWatched(movie) {
+    setWatched((watched) => [...watched, movie]);
+  }
 
   useEffect(
     function () {
@@ -178,6 +182,7 @@ export default function App() {
             <MovieDetail
               selectedId={selectedId}
               onCloseMovie={handleCloseMovie}
+              onAddWatched={handleAddWatched}
             />
           ) : (
             <>
@@ -248,10 +253,11 @@ function Movie({ movie, onSelectedMovie }) {
   );
 }
 
-function MovieDetail({ selectedId, onCloseMovie }) {
+function MovieDetail({ selectedId, onCloseMovie, onAddWatched }) {
   // if we think here , we want that when that MovieDetail component are going to mount , we want to fetch the
   // movie corresponding to selectedID , this can be done by using a useEffect
   const [movie, setMovie] = useState({}); // using {} because the data which we get as movies from api is in object form.
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     Title: title,
@@ -266,29 +272,76 @@ function MovieDetail({ selectedId, onCloseMovie }) {
     Genre: genre,
   } = movie;
 
-  console.log(title,year);
-  useEffect(function () {
-    async function getMovieDetails() {
-      const res = await fetch(
-        `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
-      );
-      const data = await res.json();
-      console.log(data);
-      setMovie(data);
-    }
-    getMovieDetails();
-  }, []);
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+    };
+    onAddWatched(newWatchedMovie);
+    onCloseMovie();
+  }
+
+  console.log(title, year);
+  useEffect(
+    function () {
+      async function getMovieDetails() {
+        setIsLoading(true);
+        const res = await fetch(
+          `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+        );
+        const data = await res.json();
+        console.log(data);
+        setMovie(data);
+        setIsLoading(false);
+      }
+      getMovieDetails();
+    },
+    [selectedId]
+  );
 
   return (
     <div className="details">
-      <header>
-        <button className="btn-back" onClick={onCloseMovie}>
-        &larr;
-      </button>
-      <img src={poster} alt={`poster of ${movie} movie`} />
-      </header>
-      
-      {selectedId}
+      {isLoading ? (
+        <Loading />
+      ) : (
+        <>
+          <header>
+            <button className="btn-back" onClick={onCloseMovie}>
+              &larr;
+            </button>
+            <img src={poster} alt={`poster of ${movie} movie`} />
+            <div className="details-overview">
+              <h2>{title}</h2>
+              <p>
+                {released} &bull; {runtime}
+              </p>
+              <p>{genre}</p>
+              <p>
+                <span>⭐</span>
+                {imdbRating} IMDB Rating
+              </p>
+            </div>
+          </header>
+          <section>
+            <div className="rating">
+              <StarRating maxRating={10} size={24} />
+              <button className="btn-add" onClick={handleAdd}>
+                + Add to List
+              </button>
+            </div>
+
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed By {director}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
@@ -325,8 +378,8 @@ function WatchSummary({ watched }) {
 function WatchMovie({ movie }) {
   return (
     <li>
-      <img src={movie.Poster} alt={`${movie.Title} poster`} />
-      <h3>{movie.Title}</h3>
+      <img src={movie.poster} alt={`${movie.title} poster`} />
+      <h3>{movie.title}</h3>
       <div>
         <p>
           <span>⭐️</span>

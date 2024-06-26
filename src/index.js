@@ -20,6 +20,7 @@ root.render(
     <StarRating />
     <StarRating size={24} maxRating={10} className='text' defaultRating ={3}/>
     <Test/> */}
+    
     <App/>
     {/* we can also pass css class like that  */}
     {/* <StarRating maxRating={10} />
