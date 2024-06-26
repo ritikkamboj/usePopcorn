@@ -70,9 +70,7 @@ function Logo() {
   );
 }
 
-function Search({query,setQuery}) {
-  
-
+function Search({ query, setQuery }) {
   return (
     <input
       className="search"
@@ -84,81 +82,79 @@ function Search({query,setQuery}) {
   );
 }
 
-const KEY ="4b4b0e0d";
+const KEY = "4b4b0e0d";
 export default function App() {
   // // const [query, setQuery] = useState("");
 
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("inception");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
-  const [error,setError]=useState('');
-  const [isLoading,setIsLoading]= useState(false);
-  const tempQuery='interstellar';
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+  const tempQuery = "interstellar";
 
-//   useEffect(function()
-// {
-//   console.log('A')
-// },[]);
-// useEffect(function()
-// {
-//   console.log('B')
-// });
-// useEffect(function()
-// {
-// console.log('D');
-// },[query])
-// console.log('C');
-
-  useEffect(function()
-{
-  async function fetchMovies(){
-    try{
-      setError(''); // that's inetersting its a good practice to update it from zero , before fetching the data 
-      setIsLoading(true);
-    const res =await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
-    console.log(res.ok,'apna data ');
-    if(!res.ok)
-      {console.log('enter in the if condition');
-      throw new Error('data is not fetched');
-    }
-    const data = await res.json();
-    console.log(data)
-    if(data.Response ==="False")
-      throw new Error("Movie not Found");
-
-    setMovies(data.Search);
-    setIsLoading(false);
-  }catch(err)
-{
- 
-
-  console.log(err);
-  console.error(err.message);
- 
- 
- 
-  setError(err.message);
-}
-
-finally
-{
-  setIsLoading(false);
-}
-
-}
-
-
-if(query.length <3)
-  {
-    setMovies([]);
-    setError('');
-    return;
+  //   useEffect(function()
+  // {
+  //   console.log('A')
+  // },[]);
+  // useEffect(function()
+  // {
+  //   console.log('B')
+  // });
+  // useEffect(function()
+  // {
+  // console.log('D');
+  // },[query])
+  // console.log('C');
+  function handleSelectedMovie(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+  function handleCloseMovie() {
+    setSelectedId(null);
   }
 
+  useEffect(
+    function () {
+      async function fetchMovies() {
+        try {
+          setError(""); // that's inetersting its a good practice to update it from zero , before fetching the data
+          setIsLoading(true);
+          const res = await fetch(
+            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+          );
+          console.log(res.ok, "apna data ");
+          if (!res.ok) {
+            console.log("enter in the if condition");
+            throw new Error("data is not fetched");
+          }
+          const data = await res.json();
+          console.log(data);
+          if (data.Response === "False") throw new Error("Movie not Found");
 
-fetchMovies()
-},[query]);
-// setWatched([]);
+          setMovies(data.Search);
+          setIsLoading(false);
+        } catch (err) {
+          console.log(err);
+          console.error(err.message);
+
+          setError(err.message);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
+
+      fetchMovies();
+    },
+    [query]
+  );
+  // setWatched([]);
   return (
     <>
       <NavBar>
@@ -168,30 +164,42 @@ fetchMovies()
       </NavBar>
       <Main>
         <Box>
-          {isLoading && <Loading/>}
-        {/* {isLoading ? <Loading/> : <MoviesList movies={movies}/>} before error condition we are using this code  */}
-        {!isLoading && !error && <MoviesList movies={movies}/> }
-        {error && <ErrorInfo messege={error}/>}
-        {}
+          {isLoading && <Loading />}
+          {/* {isLoading ? <Loading/> : <MoviesList movies={movies}/>} before error condition we are using this code  */}
+          {!isLoading && !error && (
+            <MoviesList movies={movies} onSelectedMovie={handleSelectedMovie} />
+          )}
+          {error && <ErrorInfo messege={error} />}
+          {}
         </Box>
-       
-       <Box>
-       <>
-        <WatchSummary watched={watched}/>
-        <WatchMoviesList watched={watched}/>
-         </>
-        </Box> 
+
+        <Box>
+          {selectedId ? (
+            <MovieDetail
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <WatchSummary watched={watched} />
+              <WatchMoviesList watched={watched} />
+            </>
+          )}
+        </Box>
       </Main>
     </>
   );
-  function ErrorInfo({messege})
-  {
-    return <p className="error"><span>🛑🤚</span>{messege}</p>
+  function ErrorInfo({ messege }) {
+    return (
+      <p className="error">
+        <span>🛑🤚</span>
+        {messege}
+      </p>
+    );
   }
 }
-function Loading()
-{
-  return <p className="loader">Loading... </p>
+function Loading() {
+  return <p className="loader">Loading... </p>;
 }
 
 function Main({ children }) {
@@ -211,19 +219,23 @@ function Box({ children }) {
   );
 }
 
-function MoviesList({ movies }) {
+function MoviesList({ movies, onSelectedMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} />
+        <Movie
+          movie={movie}
+          key={movie.imdbID}
+          onSelectedMovie={onSelectedMovie}
+        />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, onSelectedMovie }) {
   return (
-    <li>
+    <li onClick={() => onSelectedMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -236,7 +248,50 @@ function Movie({ movie }) {
   );
 }
 
+function MovieDetail({ selectedId, onCloseMovie }) {
+  // if we think here , we want that when that MovieDetail component are going to mount , we want to fetch the
+  // movie corresponding to selectedID , this can be done by using a useEffect
+  const [movie, setMovie] = useState({}); // using {} because the data which we get as movies from api is in object form.
 
+  const {
+    Title: title,
+    Year: year,
+    Poster: poster,
+    Runtime: runtime,
+    imdbRating,
+    Plot: plot,
+    Released: released,
+    Actors: actors,
+    Director: director,
+    Genre: genre,
+  } = movie;
+
+  console.log(title,year);
+  useEffect(function () {
+    async function getMovieDetails() {
+      const res = await fetch(
+        `https://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+      );
+      const data = await res.json();
+      console.log(data);
+      setMovie(data);
+    }
+    getMovieDetails();
+  }, []);
+
+  return (
+    <div className="details">
+      <header>
+        <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+      <img src={poster} alt={`poster of ${movie} movie`} />
+      </header>
+      
+      {selectedId}
+    </div>
+  );
+}
 
 function WatchSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
@@ -299,5 +354,3 @@ function WatchMoviesList({ watched }) {
     </ul>
   );
 }
-
-
