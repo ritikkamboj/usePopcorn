@@ -70,8 +70,8 @@ function Logo() {
   );
 }
 
-function Search() {
-  const [query, setQuery] = useState("");
+function Search({query,setQuery}) {
+  
 
   return (
     <input
@@ -88,17 +88,34 @@ const KEY ="4b4b0e0d";
 export default function App() {
   // // const [query, setQuery] = useState("");
 
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [error,setError]=useState('');
   const [isLoading,setIsLoading]= useState(false);
+  const tempQuery='interstellar';
+
+//   useEffect(function()
+// {
+//   console.log('A')
+// },[]);
+// useEffect(function()
+// {
+//   console.log('B')
+// });
+// useEffect(function()
+// {
+// console.log('D');
+// },[query])
+// console.log('C');
 
   useEffect(function()
 {
   async function fetchMovies(){
     try{
+      setError(''); // that's inetersting its a good practice to update it from zero , before fetching the data 
       setIsLoading(true);
-    const res =await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=hgjkbkj`);
+    const res =await fetch(`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`);
     console.log(res.ok,'apna data ');
     if(!res.ok)
       {console.log('enter in the if condition');
@@ -127,15 +144,26 @@ finally
 {
   setIsLoading(false);
 }
+
 }
+
+
+if(query.length <3)
+  {
+    setMovies([]);
+    setError('');
+    return;
+  }
+
+
 fetchMovies()
-},[]);
+},[query]);
 // setWatched([]);
   return (
     <>
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <Results movies={movies} />
       </NavBar>
       <Main>
