@@ -315,6 +315,16 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched}) {
     [selectedId]
   );
 
+  useEffect(function(){
+    if(!title) // this is done beacuse for the first render title is undefined , because movie not fetched and we don't want it show undefined till it again got render 
+      return
+    document.title= `Movie | ${title}`;
+
+    return function(){
+      document.title = "usePopCorn";
+    }
+  },[title])
+
   return (
     <div className="details">
       {isLoading ? (
