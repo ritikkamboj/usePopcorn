@@ -125,12 +125,15 @@ export default function App() {
 
   useEffect(
     function () {
+      const controller  = new AbortController();
+      const signal = controller.signal;
+
       async function fetchMovies() {
         try {
           setError(""); // that's inetersting its a good practice to update it from zero , before fetching the data
           setIsLoading(true);
           const res = await fetch(
-            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,{signal}
           );
           console.log(res.ok, "apna data ");
           if (!res.ok) {
@@ -142,12 +145,16 @@ export default function App() {
           if (data.Response === "False") throw new Error("Movie not Found");
 
           setMovies(data.Search);
-          setIsLoading(false);
+          setError('');
+          // setIsLoading(false);
         } catch (err) {
           console.log(err);
           console.error(err.message);
+          console.log(err.name)
+          if(err.name !== "AbortError")
+            setError(err.message);
 
-          setError(err.message);
+          
         } finally {
           setIsLoading(false);
         }
@@ -160,6 +167,11 @@ export default function App() {
       }
 
       fetchMovies();
+
+      return function()
+      {
+        controller.abort();
+      };
     },
     [query]
   );
