@@ -1,7 +1,52 @@
 import { useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
+const tempMovieData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+  },
+  {
+    imdbID: "tt0133093",
+    Title: "The Matrix",
+    Year: "1999",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg",
+  },
+  {
+    imdbID: "tt6751668",
+    Title: "Parasite",
+    Year: "2019",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg",
+  },
+];
 
+const tempWatchedData = [
+  {
+    imdbID: "tt1375666",
+    Title: "Inception",
+    Year: "2010",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
+    runtime: 148,
+    imdbRating: 8.8,
+    userRating: 10,
+  },
+  {
+    imdbID: "tt0088763",
+    Title: "Back to the Future",
+    Year: "1985",
+    Poster:
+      "https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg",
+    runtime: 116,
+    imdbRating: 8.5,
+    userRating: 9,
+  },
+];
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -50,7 +95,19 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
   const tempQuery = "interstellar";
 
-  
+  //   useEffect(function()
+  // {
+  //   console.log('A')
+  // },[]);
+  // useEffect(function()
+  // {
+  //   console.log('B')
+  // });
+  // useEffect(function()
+  // {
+  // console.log('D');
+  // },[query])
+  // console.log('C');
   function handleSelectedMovie(id) {
     setSelectedId((selectedId) => (id === selectedId ? null : id));
   }
@@ -240,8 +297,6 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched}) {
     Genre: genre,
   } = movie;
 
-// const [avgRating, setAvgRating]= useState(0);  
-
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -254,25 +309,9 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched}) {
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
-  //   setAvgRating(Number(imdbRating))
-  //  alert(avgRating);
-  //  setAvgRating((avgRating + userRating)/2);
-  //   setAvgRating((avgRating)=> (avgRating + userRating)/2);
-   
   }
 
   console.log(title, year);
-//   const [isTop, setIsTop] = useState(imdbRating >8)
-
-//   useEffect(function(){
-
-//     setIsTop(imdbRating>8);
-//   },[imdbRating])
-
-// console.log(isTop) ;
-
-const isTop = imdbRating > 8;
-console.log(isTop);
 
   useEffect(function(){
     function callBack (e){
@@ -344,9 +383,6 @@ console.log(isTop);
               </p>
             </div>
           </header>
-
-        { /* <p>{avgRating}</p> */}
-
           <section>
             <div className="rating">
             {!isWatched ? <>  <StarRating maxRating={10} size={24} onSetRating={setUserRating} />
