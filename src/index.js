@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import StarRating from './StarRating';
+// import ExampleComponent from './ExampleComponent';
 // import reportWebVitals from './reportWebVitals';
 function Test()
 {
@@ -21,6 +22,7 @@ root.render(
     <StarRating size={24} maxRating={10} className='text' defaultRating ={3}/>
     <Test/> */}
     
+    {/* <ExampleComponent/> */}
     <App/>
     {/* we can also pass css class like that  */}
     {/* <StarRating maxRating={10} />
