@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
+import { useMovies } from "./useMovies";
+
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -56,16 +58,18 @@ function Search({ query, setQuery }) {
 }
 
 const KEY = "4b4b0e0d";
+
 export default function App() {
   // // const [query, setQuery] = useState("");
 
   const [query, setQuery] = useState("inception");
-  const [movies, setMovies] = useState([]);
+  
   // const [watched, setWatched] = useState([]);
-  const [error, setError] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  
   const [selectedId, setSelectedId] = useState(null);
   const tempQuery = "interstellar";
+
+  const {movies, isLoading, error}=useMovies(query)
 
   const [watched, setWatched] = useState(function () {
     const storedValue = localStorage.getItem("watched");
@@ -95,55 +99,7 @@ export default function App() {
     [watched]
   );
 
-  useEffect(
-    function () {
-      const controller = new AbortController();
-      const signal = controller.signal;
-
-      async function fetchMovies() {
-        try {
-          setError(""); // that's inetersting its a good practice to update it from zero , before fetching the data
-          setIsLoading(true);
-          const res = await fetch(
-            `https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
-            { signal }
-          );
-          console.log(res.ok, "apna data ");
-          if (!res.ok) {
-            console.log("enter in the if condition");
-            throw new Error("data is not fetched");
-          }
-          const data = await res.json();
-          console.log(data);
-          if (data.Response === "False") throw new Error("Movie not Found");
-
-          setMovies(data.Search);
-          setError("");
-          // setIsLoading(false);
-        } catch (err) {
-          console.log(err);
-          console.error(err.message);
-          console.log(err.name);
-          if (err.name !== "AbortError") setError(err.message);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-
-      if (query.length < 3) {
-        setMovies([]);
-        setError("");
-        return;
-      }
-      handleCloseMovie();
-      fetchMovies();
-
-      return function () {
-        controller.abort();
-      };
-    },
-    [query]
-  );
+  
   // setWatched([]);
   return (
     <>
