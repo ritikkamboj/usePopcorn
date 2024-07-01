@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorage } from "./useLocalStorageState";
-
+import { useKey } from "./useKey";
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
@@ -30,21 +30,27 @@ function Logo() {
 function Search({ query, setQuery }) {
   const inputEL = useRef(null);
 
-  useEffect(function () {
-    function callBack(e) {
-      // console.log(e.code);
-      if(document.activeElement=== inputEL.current)
-        return
-      if (e.code === "Enter") {
-        inputEL.current.focus();
-        setQuery("");
-      }
-    }
+  useKey("Enter", function () {
+    if (document.activeElement === inputEL.current) return;
+    inputEL.current.focus();
+    setQuery("");
+  });
 
-    document.addEventListener("keydown", callBack);
-    console.log(inputEL.current);
-    return () => document.addEventListener("keydown", callBack);
-  }, [setQuery]);
+  // useEffect(function () {
+  //   function callBack(e) {
+  //     // console.log(e.code);
+  //     if(document.activeElement=== inputEL.current)
+  //       return
+  //     if (e.code === "Enter") {
+  //       inputEL.current.focus();
+  //       setQuery("");
+  //     }
+  //   }
+
+  //   document.addEventListener("keydown", callBack);
+  //   console.log(inputEL.current);
+  //   return () => document.addEventListener("keydown", callBack);
+  // }, [setQuery]);
 
   return (
     <input
@@ -64,16 +70,16 @@ export default function App() {
   // // const [query, setQuery] = useState("");
 
   const [query, setQuery] = useState("inception");
-  
+
   // const [watched, setWatched] = useState([]);
-  
+
   const [selectedId, setSelectedId] = useState(null);
   const tempQuery = "interstellar";
 
-  const {movies, isLoading, error}=useMovies(query)
+  const { movies, isLoading, error } = useMovies(query);
 
-  //trying to make that custom hook almost similar to useState hook 
-  const [watched, setWatched]=useLocalStorage([], "watched");
+  //trying to make that custom hook almost similar to useState hook
+  const [watched, setWatched] = useLocalStorage([], "watched");
 
   // const [watched, setWatched] = useState(function () {
   //   const storedValue = localStorage.getItem("watched");
@@ -96,9 +102,6 @@ export default function App() {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
-  
-
-  
   // setWatched([]);
   return (
     <>
@@ -205,17 +208,14 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const [isLoading, setIsLoading] = useState(false);
   const [userRating, setUserRating] = useState("");
 
-  const countRef =useRef(0);
+  const countRef = useRef(0);
 
-  useEffect(function(){
-    if(userRating)
-      countRef.current = countRef.current+1;
-
-    
-
-  },[userRating])
-
-
+  useEffect(
+    function () {
+      if (userRating) countRef.current = countRef.current + 1;
+    },
+    [userRating]
+  );
 
   const isWatched = watched.map((movie) => movie.imdbID).includes(selectedId);
   const watchedUserRating = watched.find(
@@ -247,7 +247,7 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
       userRating,
       imdbRating: Number(imdbRating),
       runtime: Number(runtime.split(" ").at(0)),
-      countRatingDecision : countRef.current
+      countRatingDecision: countRef.current,
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
@@ -270,23 +270,7 @@ function MovieDetail({ selectedId, onCloseMovie, onAddWatched, watched }) {
   const isTop = imdbRating > 8;
   console.log(isTop);
 
-  useEffect(
-    function () {
-      function callBack(e) {
-        if (e.code === "Escape") {
-          // handleCloseMovie();
-          onCloseMovie();
-          console.log("CLosing");
-        }
-      }
-
-      document.addEventListener("keydown", callBack);
-      return function () {
-        document.removeEventListener("keydown", callBack);
-      };
-    },
-    [onCloseMovie]
-  );
+  useKey("escape", onCloseMovie);
 
   useEffect(
     function () {
